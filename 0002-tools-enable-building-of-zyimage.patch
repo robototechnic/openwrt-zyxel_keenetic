@@ -23,7 +23,7 @@ index 50bd552d75..508c593215 100644
  $(curdir)/mkimage/compile += $(curdir)/libressl/compile
  $(curdir)/firmware-utils/compile += $(curdir)/libressl/compile
  $(curdir)/cmake/compile += $(curdir)/libressl/compile
-+$(curdir)/zyimage/compile := $(curdir)/findutils/install
++$(curdir)/zyimage/compile := $(curdir)/findutils/compile
  
  ifneq ($(HOST_OS),Linux)
    tools-y += coreutils
