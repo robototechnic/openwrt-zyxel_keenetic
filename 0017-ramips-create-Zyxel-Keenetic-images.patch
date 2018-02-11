@@ -1,23 +1,20 @@
-From 6b19414100c94c7500c626934f1658b7002515c0 Mon Sep 17 00:00:00 2001
-From: Dirk Neukirchen <dirkneukirchen@web.de>
-Date: Sat, 14 Feb 2015 14:26:49 +0100
-Subject: [PATCH 17/19] ramips: create Zyxel Keenetic images
+From 64fb4e4e65dd0ef94755bddb70e1a187762279e1 Mon Sep 17 00:00:00 2001
+From: robototechnic <anon@post.su>
+Date: Sun, 11 Feb 2018 12:50:16 +0300
+Subject: [PATCH] ramips create Zyxel Keenetic images
 
-create images for rt305x and mt7620n boards
-
-Signed-off-by: Dirk Neukirchen <dirkneukirchen@web.de>
 ---
- target/linux/ramips/image/Makefile | 63 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
+ target/linux/ramips/image/rt305x-legacy.mk | 72 ++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
-diff --git a/target/linux/ramips/image/Makefile b/target/linux/ramips/image/Makefile
-index 7363730..efaf45e 100644
---- a/target/linux/ramips/image/Makefile
-+++ b/target/linux/ramips/image/Makefile
-@@ -567,6 +567,55 @@ Image/Build/Profile/MPRA2=$(call BuildFirmware/Default8M/$(1),$(1),mpr-a2,MPRA2,
- Image/Build/Profile/DIR-300-B7=$(call BuildFirmware/Default4M/$(1),$(1),dir-300-b7,DIR-300-B7)
- Image/Build/Profile/DIR-320-B1=$(call BuildFirmware/Default8M/$(1),$(1),dir-320-b1,DIR-320-B1)
- 
+diff --git a/target/linux/ramips/image/rt305x-legacy.mk b/target/linux/ramips/image/rt305x-legacy.mk
+index 173739b073..a7a832e9cd 100644
+--- a/target/linux/ramips/image/rt305x-legacy.mk
++++ b/target/linux/ramips/image/rt305x-legacy.mk
+@@ -1,6 +1,67 @@
+ #
+ # RT305X Profiles
+ #
 +define BuildFirmware/ZyXEL_Keenetic_series/squashfs
 +	# $(1)=squashfs
 +	# $(2)=lowercase_board_name
@@ -58,22 +55,9 @@ index 7363730..efaf45e 100644
 +keenetic_rt305x_mtd_size_4M=3538948
 +# 7733252(=0x760004) = 8060928(ralink_default_fw_size_8M=0x7B0000) - 327680(=0x50000) + 4
 +keenetic_rt305x_mtd_size_8M=7733252
-+Image/Build/Profile/KEENETIC=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic,KEENETIC,$(keenetic_rt305x_mtd_size_8M),1245184,0x00004215)
-+Image/Build/Profile/KEENETIC_GIGA=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_giga,KEENETIC_GIGA,$(keenetic_rt305x_mtd_size_8M),1245184,0x00004615)
-+Image/Build/Profile/KEENETIC_LITE_A=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_lite_a,KEENETIC_LITE_A,$(keenetic_rt305x_mtd_size_4M),983040,0x00000417)
-+Image/Build/Profile/NBG4104=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),nbg4104,NBG4104,$(keenetic_rt305x_mtd_size_8M),1245184,0x00004104)
-+Image/Build/Profile/KEENETIC_4G_A=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_4g_a,KEENETIC_4G_A,$(keenetic_rt305x_mtd_size_4M),983040,0x00004115)
-+Image/Build/Profile/NBG4114=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),nbg4114,NBG4114,$(keenetic_rt305x_mtd_size_8M),1245184,0x00005115)
-+Image/Build/Profile/KEENETIC_START=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_start,KEENETIC_START,$(keenetic_rt305x_mtd_size_4M),1048576,0x00001202)
-+Image/Build/Profile/KEENETIC_4G_II=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_4g_ii,KEENETIC_4G_II,$(keenetic_rt305x_mtd_size_4M),1048576,0x00001212)
 +
- Image/Build/Profile/NBG-419N=$(call BuildFirmware/Default4M/$(1),$(1),nbg-419n,NBG-419N)
- 
- Image/Build/Profile/MZKW300NH2=$(call BuildFirmware/Edimax/$(1),$(1),mzk-w300nh2,MZK-W300NH2,$(mzkw300nh2_mtd_size),CSYS,RN52,0x50000,0xc0000)
-@@ -693,6 +742,14 @@ Image/Build/Profile/XDXRN502J=$(call BuildFirmware/Default4M/$(1),$(1),xdxrn502j
- 
- ifeq ($(SUBTARGET),rt305x)
- define Image/Build/Profile/Default
++ifeq ($(SUBTARGET),rt305x)
++define Image/Build/Profile/Default
 +	$(call Image/Build/Profile/KEENETIC,$(1))
 +	$(call Image/Build/Profile/KEENETIC_GIGA,$(1))
 +	$(call Image/Build/Profile/KEENETIC_LITE_A,$(1))
@@ -82,29 +66,37 @@ index 7363730..efaf45e 100644
 +	$(call Image/Build/Profile/NBG4114,$(1))
 +	$(call Image/Build/Profile/KEENETIC_START,$(1))
 +	$(call Image/Build/Profile/KEENETIC_4G_II,$(1))
- 	$(call Image/Build/Profile/3G6200N,$(1))
- 	$(call Image/Build/Profile/3G6200NL,$(1))
- 	$(call Image/Build/Profile/3G150B,$(1))
-@@ -916,6 +973,10 @@ Image/Build/Profile/ArcherC20i=$(call BuildFirmware/Tplink/$(1),$(1),ArcherC20i,ArcherC20i)
- microwrt_mtd_size=16515072
- Image/Build/Profile/MicroWRT=$(call BuildFirmware/CustomFlash/$(1),$(1),microwrt,MicroWRT,$(microwrt_mtd_size))
- 
++endef
++endif
++
++ifeq ($(SUBTARGET),mt7620)
++define Image/Build/Profile/Default
++	$(call Image/Build/Profile/KEENETIC_LITE_II,$(1))
++	$(call Image/Build/Profile/KEENETIC_OMNI,$(1))
++endef
++endif
++
+ define BuildFirmware/DCS930/squashfs
+ 	$(call BuildFirmware/Default4M/squashfs,squashfs,$(2),$(3))
+ 	dd if=$(KDIR)/vmlinux-$(2).bin.lzma of=$(KDIR)/image.$(2).combined bs=1048512 count=1 conv=sync
+@@ -85,6 +146,17 @@ Image/Build/Profile/DCS930=$(call BuildFirmware/DCS930/$(1),$(1),dcs-930,DCS-930
+ Image/Build/Profile/DCS930LB1=$(call BuildFirmware/DCS930/$(1),$(1),dcs-930l-b1,DCS-930L-B1)
+ Image/Build/Profile/WL-341V3=$(call BuildFirmware/WL-341V3/$(1),$(1))
+ Image/Build/Profile/WHRG300N=$(call BuildFirmware/WHRG300N/$(1),$(1))
++Image/Build/Profile/KEENETIC=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic,KEENETIC,$(keenetic_rt305x_mtd_size_8M),1245184,0x00004215)
++Image/Build/Profile/KEENETIC_GIGA=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_giga,KEENETIC_GIGA,$(keenetic_rt305x_mtd_size_8M),1245184,0x00004615)
++Image/Build/Profile/KEENETIC_LITE_A=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_lite_a,KEENETIC_LITE_A,$(keenetic_rt305x_mtd_size_4M),983040,0x00000417)
++Image/Build/Profile/NBG4104=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),nbg4104,NBG4104,$(keenetic_rt305x_mtd_size_8M),1245184,0x00004104)
++Image/Build/Profile/KEENETIC_4G_A=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_4g_a,KEENETIC_4G_A,$(keenetic_rt305x_mtd_size_4M),983040,0x00004115)
++Image/Build/Profile/NBG4114=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),nbg4114,NBG4114,$(keenetic_rt305x_mtd_size_8M),1245184,0x00005115)
++Image/Build/Profile/KEENETIC_START=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_start,KEENETIC_START,$(keenetic_rt305x_mtd_size_4M),1048576,0x00001202)
++Image/Build/Profile/KEENETIC_4G_II=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_4g_ii,KEENETIC_4G_II,$(keenetic_rt305x_mtd_size_4M),1048576,0x00001212)
 +zyxel_mt7620_mtd_size_8M=7733248
 +Image/Build/Profile/KEENETIC_LITE_II=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_lite_ii,KEENETIC_LITE_II,$(zyxel_mt7620_mtd_size_8M),1245184,0x00001302)
 +Image/Build/Profile/KEENETIC_OMNI=$(call BuildFirmware/ZyXEL_Keenetic_series/$(1),$(1),keenetic_omni,KEENETIC_OMNI,$(zyxel_mt7620_mtd_size_8M),1245184,0x00001312)
-+
  
- ifeq ($(SUBTARGET),mt7620)
- define Image/Build/Profile/Default
-@@ -948,6 +1009,8 @@ $(call Image/Build/Profile/XIAOMI-MIWIFI-MINI,$(1))
- 	$(call Image/Build/Profile/ZBT-WA05,$(1))
- 	$(call Image/Build/Profile/ArcherC20i,$(1))
- 	$(call Image/Build/Profile/MicroWRT,$(1))
-+	$(call Image/Build/Profile/KEENETIC_LITE_II,$(1))
-+	$(call Image/Build/Profile/KEENETIC_OMNI,$(1))
- endef
- endif
- 
+ define LegacyDevice/ALL02393G
+   DEVICE_TITLE := Allnet ALL0239-3G 
 -- 
-2.3.0
+2.11.0
 

@@ -1,78 +1,166 @@
-From 561919e5f4b143aabe02a18797e9faa1a9062756 Mon Sep 17 00:00:00 2001
-From: Dirk Neukirchen <dirkneukirchen@web.de>
-Date: Sat, 14 Feb 2015 14:44:10 +0100
-Subject: [PATCH 19/19] ramips: add ZyXel Keenetic userspace
+From 7f80e136a63224c2e1c334008cd0194c62881246 Mon Sep 17 00:00:00 2001
+From: robototechnic <anon@post.su>
+Date: Sun, 11 Feb 2018 13:15:27 +0300
+Subject: [PATCH] ramips add ZyXel Keenetic userspace
 
-Signed-off-by: Dirk Neukirchen <dirkneukirchen@web.de>
 ---
  target/linux/ramips/base-files/etc/board.d/01_leds | 43 ++++++++++++++++++++++
- .../linux/ramips/base-files/etc/board.d/02_network | 37 +++++++++++++++++++
+ .../linux/ramips/base-files/etc/board.d/02_network | 34 +++++++++++++++++
  target/linux/ramips/base-files/etc/diag.sh         | 12 ++++++
  target/linux/ramips/base-files/lib/ramips.sh       | 30 +++++++++++++++
  .../ramips/base-files/lib/upgrade/platform.sh      | 10 +++++
- 5 files changed, 132 insertions(+)
+ 5 files changed, 129 insertions(+)
 
 diff --git a/target/linux/ramips/base-files/etc/board.d/01_leds b/target/linux/ramips/base-files/etc/board.d/01_leds
-index bfe1c0c..a97100e 100755
+index 110b588339..018d697ce6 100755
 --- a/target/linux/ramips/base-files/etc/board.d/01_leds
 +++ b/target/linux/ramips/base-files/etc/board.d/01_leds
-@@ -139,6 +139,49 @@ case $board in
- 	hw550-3g)
- 		set_usb_led "hw550-3g:green:usb"
+@@ -21,6 +21,49 @@ case $board in
+ all0239-3g|\
+ ew1200|\
+ hw550-3g|\
++keenetic)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	set_usb_led "zyxel:green:usb"
++	set_wifi_led "rt2800soc-phy0::radio"
++	;;
++keenetic_giga)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	set_usb_led "zyxel:green:usb"
++	set_wifi_led "zyxel:green:wlan"
++	;;
++keenetic_lite_a)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	;;
++nbg4104)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	set_wifi_led "rt2800soc-phy0::radio"
++	;;
++keenetic_4g_a)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	set_usb_led "zyxel:green:usb"
++	set_wifi_led "rt2800soc-phy0::radio"
++	;;
++nbg4114)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	set_usb_led "zyxel:green:usb"
++	set_wifi_led "zyxel:green:wlan"
++	ucidef_set_led_heartbeat "heartbeat" "reserved" "zyxel:green:reserved"
++	;;
++keenetic_start)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	set_wifi_led "rt2800soc-phy0::radio"
++	;;
++keenetic_4g_ii)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	set_usb_led "zyxel:green:usb"
++	set_wifi_led "rt2800soc-phy0::radio"
++	;;
++keenetic_lite_ii)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	;;
++keenetic_omni)
++	ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++	;;
+ mofi3500-3gn|\
+ sap-g3200u3|\
+ sk-wb8|\
+diff --git a/target/linux/ramips/base-files/etc/board.d/02_network b/target/linux/ramips/base-files/etc/board.d/02_network
+index d3855947db..68e71e3dca 100755
+--- a/target/linux/ramips/base-files/etc/board.d/02_network
++++ b/target/linux/ramips/base-files/etc/board.d/02_network
+@@ -90,6 +90,13 @@ ramips_setup_interfaces()
+ 	mac1200rv2|\
+ 	miwifi-mini|\
+ 	miwifi-nano|\
++	keenetic | \
++	keenetic_lite_a | \
++	keenetic_start | \
++	keenetic_4g_ii | \
++	keenetic_lite_ii | \
++	keenetic_omni | \
++	nbg4104 | \
+ 	mt7621|\
+ 	mt7628|\
+ 	mzk-750dhp|\
+@@ -159,6 +166,11 @@ ramips_setup_interfaces()
+ 			"1:lan" "2:lan" "3:lan" "4:lan" "6t@eth0"
  		;;
-+	keenetic)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		set_usb_led "zyxel:green:usb"
-+		set_wifi_led "rt2800soc-phy0::radio"
+ 	atp-52b|\
++	keenetic_giga )
++		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
++		ucidef_add_switch "switch0" "1" "1"
++		ucidef_add_switch_vlan "switch0" "1" "0 1 2 3 4 5 6t"
 +		;;
-+	keenetic_giga)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		set_usb_led "zyxel:green:usb"
-+		set_wifi_led "zyxel:green:wlan"
-+		;;
-+	keenetic_lite_a)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		;;
-+	nbg4104)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		set_wifi_led "rt2800soc-phy0::radio"
-+		;;
+ 	awm002-evb-4M|\
+ 	awm002-evb-8M|\
+ 	c20i|\
+@@ -355,6 +367,18 @@ ramips_setup_interfaces()
+ 		ucidef_add_switch "switch0" \
+ 			"0:lan:2" "1:lan:1" "4:wan" "6@eth0"
+ 		;;
 +	keenetic_4g_a)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		set_usb_led "zyxel:green:usb"
-+		set_wifi_led "rt2800soc-phy0::radio"
++		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
++		ucidef_add_switch "switch0" "1" "1"
++		ucidef_add_switch_vlan "switch0" "1" "2 3 6t"
++		ucidef_add_switch_vlan "switch0" "2" "0 6t"
 +		;;
 +	nbg4114)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		set_usb_led "zyxel:green:usb"
-+		set_wifi_led "zyxel:green:wlan"
-+		ucidef_set_led_heartbeat "heartbeat" "reserved" "zyxel:green:reserved"
++		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
++		ucidef_add_switch "switch0" "1" "1"
++		ucidef_add_switch_vlan "switch0" "1" "0 1 6t"
++		ucidef_add_switch_vlan "switch0" "2" "4 6t"
 +		;;
-+	keenetic_start)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		set_wifi_led "rt2800soc-phy0::radio"
-+		;;
-+	keenetic_4g_ii)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		set_usb_led "zyxel:green:usb"
-+		set_wifi_led "rt2800soc-phy0::radio"
-+		;;
-+	keenetic_lite_ii)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
-+		;;
+ 	*)
+ 		RT3X5X=`cat /proc/cpuinfo | egrep "(RT3.5|RT5350)"`
+ 		if [ -n "${RT3X5X}" ]; then
+@@ -509,6 +533,16 @@ ramips_setup_macs()
+ 		wan_mac="$(grep -m1 mac= "/dev/mtd${index}" | cut -d= -f2)"
+ 		lan_mac=$wan_mac
+ 		;;
++	keenetic | \
++	keenetic_giga | \
++	keenetic_lite_a | \
++	nbg4104 | \
++	keenetic_4g_a | \
++	nbg4114 | \
++	keenetic_start | \
++	keenetic_4g_ii | \
++	keenetic_lite_ii | \
++	keenetic_omni | \
+ 	wcr-150gn)
+ 		wan_mac=$(mtd_get_mac_binary factory 40)
+ 		;;
+diff --git a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/base-files/etc/diag.sh
+index 068df1df68..a7ef2dc80a 100644
+--- a/target/linux/ramips/base-files/etc/diag.sh
++++ b/target/linux/ramips/base-files/etc/diag.sh
+@@ -195,6 +195,18 @@ get_status_led() {
+ 	zte-q7)
+ 		status_led="$boardname:red:status"
+ 		;;
++	keenetic|\
++	keenetic_giga|\
++	keenetic_lite_a|\
++	nbg4104|\
++	keenetic_4g_a|\
++	nbg4114|\
++	keenetic_start|\
++	keenetic_4g_ii|\
++	keenetic_lite_ii|\
 +	keenetic_omni)
-+		ucidef_set_led_default "power" "power" "zyxel:green:power" "1"
++		status_led="zyxel:green:power"
 +		;;
- 	mlw221|\
- 	mlwg2)
- 		set_wifi_led "kingston:blue:wifi"
+ 	mr-102n)
+ 		status_led="$boardname:amber:status"
+ 		;;
 diff --git a/target/linux/ramips/base-files/lib/ramips.sh b/target/linux/ramips/base-files/lib/ramips.sh
-index 4527414..3409bd8 100755
+index 75474fbc6d..8245f1f99c 100755
 --- a/target/linux/ramips/base-files/lib/ramips.sh
 +++ b/target/linux/ramips/base-files/lib/ramips.sh
-@@ -427,6 +427,36 @@ ramips_board_detect() {
- 	*"Mediatek MT7628AN evaluation board")
- 		name="mt7628"
+@@ -322,6 +322,36 @@ ramips_board_detect() {
+ 	*"MT7620a + MT7530 evaluation"*)
+ 		name="mt7620a_mt7530"
  		;;
 +	*"ZyXEL Keenetic")
 +		name="keenetic"
@@ -104,17 +192,17 @@ index 4527414..3409bd8 100755
 +	*"ZyXEL Keenetic Omni")
 +		name="keenetic_omni"
 +		;;
- 	*"MediaTek LinkIt Smart 7688")
- 		linkit="$(dd bs=1 skip=1024 count=12 if=/dev/mtd2 2> /dev/null)"
- 		if [ "${linkit}" = "LINKITS7688D" ]; then
+ 	*"MT7620a V22SG"*)
+ 		name="mt7620a_v22sg"
+ 		;;
 diff --git a/target/linux/ramips/base-files/lib/upgrade/platform.sh b/target/linux/ramips/base-files/lib/upgrade/platform.sh
-index 356a085..996c6f4 100755
+index 892dfe3fbe..bd5f2b8e6d 100755
 --- a/target/linux/ramips/base-files/lib/upgrade/platform.sh
 +++ b/target/linux/ramips/base-files/lib/upgrade/platform.sh
-@@ -74,6 +74,16 @@ platform_check_image() {
- 	mpr-a2 | \
- 	mr-102n | \
- 	mzk-w300nh2 | \
+@@ -104,6 +104,16 @@ platform_check_image() {
+ 	mzk-ex300np|\
+ 	mzk-ex750np|\
+ 	mzk-w300nh2|\
 +	keenetic | \
 +	keenetic_giga | \
 +	keenetic_lite_a | \
@@ -125,102 +213,9 @@ index 356a085..996c6f4 100755
 +	keenetic_4g_ii | \
 +	keenetic_lite_ii | \
 +	keenetic_omni | \
- 	nbg-419n | \
- 	nw718 | \
- 	omni-emb | \
-diff --git a/target/linux/ramips/base-files/etc/board.d/02_network b/target/linux/ramips/base-files/etc/board.d/02_network
-index a78912d..231f429 100755
---- a/target/linux/ramips/base-files/etc/board.d/02_network
-+++ b/target/linux/ramips/base-files/etc/board.d/02_network
-@@ -136,10 +136,17 @@ ramips_setup_interfaces()
- 	firewrt | \
- 	pbr-m1 | \
- 	hlk-rm04 | \
-+	keenetic | \
-+	keenetic_lite_a | \
-+	keenetic_start | \
-+	keenetic_4g_ii | \
-+	keenetic_lite_ii | \
-+	keenetic_omni | \
- 	mt7621 | \
- 	mt7628 | \
- 	mzk-w300nh2 | \
- 	mzk-750dhp | \
-+	nbg4104 | \
- 	whr-300hp2 | \
- 	whr-600d | \
- 	wsr-600 | \
-@@ -166,6 +173,11 @@ ramips_setup_interfaces()
- 		ucidef_add_switch_vlan "switch0" "1" "1 2 6t"
- 		ucidef_add_switch_vlan "switch0" "2" "0 6t"
- 		;;
-+	keenetic_giga )
-+		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
-+		ucidef_add_switch "switch0" "1" "1"
-+		ucidef_add_switch_vlan "switch0" "1" "0 1 2 3 4 5 6t"
-+		;;
- 	awm002-evb | \
- 	awm003-evb | \
- 	argus-atp52b | \
-@@ -269,6 +281,19 @@ ramips_setup_interfaces()
- 		ucidef_add_switch_vlan "switch0" "1" "1 2 3 4 5t"
- 		ucidef_add_switch_vlan "switch0" "2" "0 5t"
- 		;;
-+	keenetic_4g_a)
-+		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
-+		ucidef_add_switch "switch0" "1" "1"
-+		ucidef_add_switch_vlan "switch0" "1" "2 3 6t"
-+		ucidef_add_switch_vlan "switch0" "2" "0 6t"
-+		;;
-+
-+	nbg4114)
-+		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
-+		ucidef_add_switch "switch0" "1" "1"
-+		ucidef_add_switch_vlan "switch0" "1" "0 1 6t"
-+		ucidef_add_switch_vlan "switch0" "2" "4 6t"
-+		;;
- 	*)
- 		RT3X5X=`cat /proc/cpuinfo | egrep "(RT3.5|RT5350)"`
- 		if [ -n "${RT3X5X}" ]; then
-@@ -350,6 +375,16 @@ ramips_setup_macs()
- 		wan_mac=$(mtd_get_mac_ascii config WAN_MAC_ADDR)
- 		;;
- 
-+	keenetic | \
-+	keenetic_giga | \
-+	keenetic_lite_a | \
-+	nbg4104 | \
-+	keenetic_4g_a | \
-+	nbg4114 | \
-+	keenetic_start | \
-+	keenetic_4g_ii | \
-+	keenetic_lite_ii | \
-+	keenetic_omni | \
- 	wcr-150gn)
- 		wan_mac=$(mtd_get_mac_binary factory 40)
- 		;;
-diff --git a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/base-files/etc/diag.sh
-index 6474ebd..debaedb 100644
---- a/target/linux/ramips/base-files/etc/diag.sh
-+++ b/target/linux/ramips/base-files/etc/diag.sh
-@@ -114,6 +114,18 @@ get_status_led() {
- 	mpr-a2)
- 		status_led="hame:red:power"
- 		;;
-+	keenetic|\
-+	keenetic_giga|\
-+	keenetic_lite_a|\
-+	nbg4104|\
-+	keenetic_4g_a|\
-+	nbg4114|\
-+	keenetic_start|\
-+	keenetic_4g_ii|\
-+	keenetic_lite_ii|\
-+	keenetic_omni)
-+		status_led="zyxel:green:power"
-+		;;
- 	mr-102n)
- 		status_led="mr-102n:amber:status"
- 		;;
+ 	mzk-wdpr|\
+ 	nbg-419n|\
+ 	nbg-419n2|\
 -- 
-2.3.0
+2.11.0
+

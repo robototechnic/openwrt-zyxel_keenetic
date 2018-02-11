@@ -1,35 +1,32 @@
-From 0371f039b72fe5b016d5883db6df1c4db08ca915 Mon Sep 17 00:00:00 2001
-From: Dirk Neukirchen <dirkneukirchen@web.de>
-Date: Thu, 12 Feb 2015 08:41:48 +0100
-Subject: [PATCH 02/19] tools: enable building of zyimage
+From a2c99456f92df14efeabd8eee37a9af2eb115f18 Mon Sep 17 00:00:00 2001
+From: robototechnic <anon@post.su>
+Date: Sun, 11 Feb 2018 11:12:51 +0300
+Subject: [PATCH] tools enable building of zyimage
 
-build only on ramips (ZyXel Keenetic)
-
-Signed-off-by: Dirk Neukirchen <dirkneukirchen@web.de>
 ---
  tools/Makefile | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/tools/Makefile b/tools/Makefile
-index 93aa5b3..dd6268f 100644
+index 50bd552d75..508c593215 100644
 --- a/tools/Makefile
 +++ b/tools/Makefile
-@@ -38,6 +38,7 @@ tools-y += lzma squashfs4
- tools-$(BUILD_B43_TOOLS) += b43-tools
- tools-$(BUILD_PPL_CLOOG) += ppl cloog
+@@ -37,6 +37,7 @@ tools-$(BUILD_B43_TOOLS) += b43-tools
+ tools-$(BUILD_ISL) += isl
  tools-$(CONFIG_USE_SPARSE) += sparse
+ tools-$(CONFIG_TARGET_apm821xx) += genext2fs
 +tools-$(CONFIG_TARGET_ramips) += zyimage
  
  # builddir dependencies
- $(curdir)/bison/compile := $(curdir)/flex/install
-@@ -71,6 +72,7 @@ $(curdir)/bc/compile := $(curdir)/bison/install
- $(curdir)/findutils/compile := $(curdir)/bison/install
- $(curdir)/gengetopt/compile := $(curdir)/libtool/install
- $(curdir)/patchelf/compile := $(curdir)/libtool/install
+ $(curdir)/bison/compile := $(curdir)/flex/compile
+@@ -71,6 +72,7 @@ $(curdir)/libressl/compile := $(curdir)/pkg-config/compile
+ $(curdir)/mkimage/compile += $(curdir)/libressl/compile
+ $(curdir)/firmware-utils/compile += $(curdir)/libressl/compile
+ $(curdir)/cmake/compile += $(curdir)/libressl/compile
 +$(curdir)/zyimage/compile := $(curdir)/findutils/install
  
- ifneq ($(CONFIG_CCACHE)$(CONFIG_SDK),)
- $(foreach tool, $(filter-out patch,$(tools-y)), $(eval $(curdir)/$(tool)/compile += $(curdir)/ccache/install))
+ ifneq ($(HOST_OS),Linux)
+   tools-y += coreutils
 -- 
-2.3.0
+2.11.0
 
